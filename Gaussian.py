@@ -31,6 +31,11 @@ class GaussianNaiveBayes:
     def mean(self,data):
         return sum(data)/float(len(data))
 
+    def variance(self,data):
+        avg = self.mean(data)
+        variance = sum([pow(x-avg,2) for x in data])/float(len(data)-1)
+        return variance
+
     def standardDeviation(self,data):
         avg = self.mean(data)
         variance = sum([pow(x-avg,2) for x in data])/float(len(data)-1)
@@ -39,6 +44,8 @@ class GaussianNaiveBayes:
     def summarizeDataset(self,data):
         data = [sublist[1:] for sublist in data]
         summaries = [(self.mean(attribute),self.standardDeviation(attribute)) for attribute in zip(*data)]
+        summaries_with_variance = [(self.mean(attribute),self.variance(attribute)) for attribute in zip(*data)]
+        del summaries_with_variance[-1]
         del summaries[-1]   # remove class labels summaries
         return summaries
 
