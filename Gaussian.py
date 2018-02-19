@@ -15,10 +15,6 @@ class GaussianNaiveBayes:
             dataset[i] = [float(x) for x in dataset[i]]
         return dataset
 
-    #split dataset
-    def splitdata(selfdata):
-        return selfdata
-
     def separateByClass(self,data):
         classes = {}
         for i in range(len(data)):
@@ -56,7 +52,7 @@ class GaussianNaiveBayes:
             summaries[classvalue] = self.summarizeDataset(vectors)
         return summaries
 
-    # Calculate Priors, TODO: think if passing already separated data improves design ?
+    # Calculate Priors
     def calculatePriors(self,data):
         priors = {}
         separated = self.separateByClass(data)
@@ -67,12 +63,12 @@ class GaussianNaiveBayes:
         return priors
 
     def predict(self,data,summaryPerClass,priors):
-        _training_features = [sublist[1:-1] for sublist in data]
+        _training_features = [sublist[0:-1] for sublist in data]
         _training_predictions = {}
         for i in range(1,len(_training_features) + 1):
-            _training_predictions[i] = self.calculateClassProbs(summaryPerClass, priors, _training_features[i-1])
-        _predictions = {}
+            _training_predictions[_training_features[i-1][0]] = self.calculateClassProbs(summaryPerClass, priors, _training_features[i-1])
 
+        _predictions = {}
         for feature_number,log_entries in _training_predictions.iteritems():
             bestLabel, bestProb = None, -1
             for class_num, prob in log_entries.iteritems():
@@ -95,6 +91,7 @@ class GaussianNaiveBayes:
         :return: returns the loglikelihood calculation of a vector for each class.
         '''
 
+        vector = vector[1:]
         # Calculate class probabilities
         logpriors = {}
         for classval, entry in priors.iteritems():
@@ -106,7 +103,9 @@ class GaussianNaiveBayes:
             for i in range(len(vector)):
                 ith_vector = vector[i]
                 mean,stdev = summary[int(classval)][i]
-                loglikelihood[classval] += math.log(self.calculateProbability(ith_vector,mean,stdev),math.e)
+                prob = self.calculateProbability(ith_vector,mean,stdev)
+                if(prob != 0):
+                    loglikelihood[classval] += math.log(prob,math.e)
         return loglikelihood
 
     def calculateAccuracy(self,predictions,answers):
@@ -115,6 +114,46 @@ class GaussianNaiveBayes:
         for key,value in predictions.iteritems():
             sum += 1 if answers[key] == value else 0
         return (sum/float(_total)) * 100
+
+    def crossvalidation(self,data,numberOfParts):
+        #split the data
+        partSize = len(data)/numberOfParts
+        splittedData = {}
+        start = 0
+        end = partSize
+        for i in range(numberOfParts):
+            splittedData[i] = data[start:end]
+            start = end
+            end = end + partSize
+
+        for testdata, training in splittedData.iteritems():
+            testpart = splittedData[testdata]
+            trainingpart = [splittedData[i] for i in range(len(splittedData)) if i is not testdata]
+
+            #flatten training part, just asthetics
+            trainingpart = [item for sublist in trainingpart for item in sublist]
+            priors = self.calculatePriors(trainingpart)
+            summaryPerClass = self.summarizeByClass(trainingpart)
+            _training_predictions = self.predict(testpart, summaryPerClass, priors)
+            #print _training_predictions
+            answers = {int(sublist[0]): int(sublist[-1]) for sublist in testpart}
+            #print answers
+            #print self.calculateAccuracy(_training_predictions, answers)
+            _training_predictions = self.zeror(testpart,priors)
+            #print _training_predictions
+
+            print self.calculateAccuracy(_training_predictions,answers)
+
+    def zeror(self,data,priors):
+        maxclasslabel =  max(priors,key=priors.get)
+        _training_features = [sublist[0:-1] for sublist in data]
+        _training_predictions = {}
+        for i in range(1,len(_training_features) + 1):
+            _training_predictions[_training_features[i-1][0]] = maxclasslabel
+        return _training_predictions
+
+
+
 
 def main():
         nb = GaussianNaiveBayes()
@@ -125,6 +164,11 @@ def main():
         _training_predictions = nb.predict(data,summaryPerClass,priors)
         answers = {int(sublist[0]) :int(sublist[-1]) for sublist in data}
         print nb.calculateAccuracy(_training_predictions,answers)
+        nb.crossvalidation(data,5)
+        """
+        [1.51831, 14.39, 0.0, 1.82, 72.86, 1.41, 6.47, 2.88, 0.0] 0.0125833333333 0.0707640870951 7
+        """
+        #print nb.calculateProbability(2.88,0.0125833333333,0.0707640870951)
 
 if __name__ == '__main__':
         main()
