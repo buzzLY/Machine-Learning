@@ -120,6 +120,7 @@ class GaussianNaiveBayes:
         partSize = len(data)/numberOfParts
         splittedData = {}
         start = 0
+        _global_predictions = {}
         end = partSize
         for i in range(numberOfParts):
             splittedData[i] = data[start:end]
@@ -135,14 +136,19 @@ class GaussianNaiveBayes:
             priors = self.calculatePriors(trainingpart)
             summaryPerClass = self.summarizeByClass(trainingpart)
             _training_predictions = self.predict(testpart, summaryPerClass, priors)
+            _global_predictions.update(_training_predictions)
             #print _training_predictions
             answers = {int(sublist[0]): int(sublist[-1]) for sublist in testpart}
             #print answers
-            #print self.calculateAccuracy(_training_predictions, answers)
-            _training_predictions = self.zeror(testpart,priors)
+            print self.calculateAccuracy(_training_predictions, answers)
+            #_training_predictions = self.zeror(testpart,priors)
             #print _training_predictions
 
-            print self.calculateAccuracy(_training_predictions,answers)
+            #print self.calculateAccuracy(_training_predictions,answers)
+        print _global_predictions
+        with open('predictionshw1.csv', 'wb') as f:
+            w = csv.writer(f)
+            w.writerows(_global_predictions.items())
 
     def zeror(self,data,priors):
         maxclasslabel =  max(priors,key=priors.get)
@@ -163,7 +169,7 @@ def main():
         summaryPerClass = nb.summarizeByClass(data)
         _training_predictions = nb.predict(data,summaryPerClass,priors)
         answers = {int(sublist[0]) :int(sublist[-1]) for sublist in data}
-        print nb.calculateAccuracy(_training_predictions,answers)
+        nb.calculateAccuracy(_training_predictions,answers)
         nb.crossvalidation(data,5)
         """
         [1.51831, 14.39, 0.0, 1.82, 72.86, 1.41, 6.47, 2.88, 0.0] 0.0125833333333 0.0707640870951 7
