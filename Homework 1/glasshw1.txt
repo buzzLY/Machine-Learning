@@ -1,0 +1,67 @@
+1. Title: Glass Identification Database
+
+2. Sources:
+    (a) Creator: B. German
+        -- Central Research Establishment
+           Home Office Forensic Science Service
+           Aldermaston, Reading, Berkshire RG7 4PN
+    (b) Donor: Vina Spiehler, Ph.D., DABFT
+               Diagnostic Products Corporation
+               (213) 776-0180 (ext 3014)
+    (c) Date: September, 1987
+
+Note: This version of the dataset was modified for use
+in CS6923, Machine Learning, by L. Hellerstein in Feb. 2018.  
+(The original dataset classified the glass into 7 classes: 4 types of window
+glass classes, and 3 types of non-window glass classes.  This version
+treats all 4 types of window glass classes as one class, and all 3 types of
+non-window glass classes as one class.)
+
+3. Past Usage:
+    -- Rule Induction in Forensic Science
+       -- Ian W. Evett and Ernest J. Spiehler
+       -- Central Research Establishment
+          Home Office Forensic Science Service
+          Aldermaston, Reading, Berkshire RG7 4PN
+       -- General Results: nearest neighbor held its own with respect to the
+             rule-based system
+
+4. Relevant Information:
+      Vina conducted a comparison test of her rule-based system, BEAGLE, the
+      nearest-neighbor algorithm, and discriminant analysis.  BEAGLE is 
+      a product available through VRS Consulting, Inc.; 4676 Admiralty Way,
+      Suite 206; Marina Del Ray, CA 90292 (213) 827-7890 and FAX: -3189.
+      In determining whether the glass was a type of "float" glass or not,
+      the following results were obtained (# incorrect answers):
+
+             Type of Sample                            Beagle   NN    DA
+             Windows that were float processed (87)     10      12    21
+             Windows that were not:            (76)     19      16    22
+
+      The study of classification of types of glass was motivated by 
+      criminological investigation.  At the scene of the crime, the glass left
+      can be used as evidence...if it is correctly identified!
+
+5. Number of Instances: 214
+
+6. Number of input attributes: 9 
+   -- all attributes except the class are continuous values
+
+7. Attribute and Class Information:
+   1. RI: refractive index
+   2. Na: Sodium (unit measurement: weight percent in corresponding oxide, as 
+                  are attributes 4-10)
+   3. Mg: Magnesium
+   4. Al: Aluminum
+   5. Si: Silicon
+   6. K: Potassium
+   7. Ca: Calcium
+   8. Ba: Barium
+  9. Fe: Iron
+  10. Type of glass: (class)
+      -- 1 window glass (from vehicle or building)
+      -- 2 not window glass (containers, tableware, or headlamps)
+
+8. Class Distribution: (out of 214 total instances)
+    -- 163 Window glass 
+    -- 51 Non-window glass
